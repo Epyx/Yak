@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet Layers Control Example</title>
+	<meta charset="utf-8" />
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../resources/layout.css" type="text/css">
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap-responsive.min.css" type="text/css">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.css" />
+	<!--[if lte IE 8]>
+	    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.ie.css" />
+	<![endif]-->
+
+	<script src="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="./">Yak Map</a>
+          <ul class="nav pull-right">
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+
+      <div class="row-fluid">
+        <div class="span12">
+          <div id="map" class="map" style="width: auto; height: 800px"></div>
+	<script>
+		var cities = new L.LayerGroup();
+
+	    L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities),
+		L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.').addTo(cities),
+		L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.').addTo(cities),
+		L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.').addTo(cities);
+
+		var cloud = L.tileLayer.wms("http://nowcoast.noaa.gov:80/wms/com.esri.wms.Esrimap/obs?", {
+		    layers: 'RAS_GOES',
+		    format: 'image/png',
+		    transparent: true,
+		    attribution: "Weather data © NOAA"
+		});
+
+		var ws = L.tileLayer.wms("http://nowcoast.noaa.gov:80/wms/com.esri.wms.Esrimap/obs?", {
+		    layers: 'OBS_MET_WIND',
+		    format: 'image/png',
+		    transparent: true,
+		    attribution: "Weather data © NOAA"
+		});
+		
+		var bay = L.tileLayer.wms("http://nowcoast.noaa.gov:80/wms/com.esri.wms.Esrimap/guidance?", {
+		    layers: 'EOFS_RAS_SPD_NC0',
+		    format: 'image/png',
+		    transparent: true,
+		    attribution: "Weather data © NOAA"
+		});
+
+		var water = L.tileLayer.wms("http://nowcoast.noaa.gov:80/wms/com.esri.wms.Esrimap/guidance?", {
+		    layers: 'rivers',
+		    format: 'image/png',
+		    transparent: true,
+		    attribution: "Weather data © NOAA"
+		});
+
+	    var cmAttr = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+			cmUrl = 'http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/{styleId}/256/{z}/{x}/{y}.png';
+
+	    var minimal   = L.tileLayer(cmUrl, {styleId: 22677, attribution: cmAttr}),
+		    midnight  = L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
+		    motorways = L.tileLayer(cmUrl, {styleId: 46561, attribution: cmAttr});
+
+		var map = L.map('map', {
+			center: [39.73, -95.99],
+			zoom: 5,
+			layers: [minimal, cities]
+		});
+
+		var baseLayers = {
+			"Minimal": minimal,
+			"Night View": midnight
+		};
+
+		var overlays = {
+			"Motorways": motorways,
+			"Cities": cities,
+			"Cloud" : cloud,
+			"Wind Speed & Direction" : ws,
+			"Bay" : bay,
+			"Water" : water
+		};
+
+		L.control.layers(baseLayers, overlays).addTo(map);
+	</script>
+        </div>
+      </div>
+</body>
+</html>
